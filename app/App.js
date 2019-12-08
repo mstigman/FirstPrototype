@@ -12,13 +12,13 @@ import { Header } from "react-native-elements";
 import WriteReview from "./writeReview";
 import console from "console";
 
-type Props = {};
-export default class App extends Component<Props> {
-  state = { loading: true, drizzleState: null, modalVisible: false };
+export default class App extends Component {
+  state = { loading: true, modalVisible: false };
 
   componentDidMount() {
-    const { drizzle, web3 } = this.props;
+    const { contract, web3 } = this.props;
 
+    /*
     this.unsubscribe = drizzle.store.subscribe(() => {
       const drizzleState = drizzle.store.getState();
 
@@ -26,11 +26,9 @@ export default class App extends Component<Props> {
         this.setState({ loading: false, drizzleState });
       }
     });
+    */
+   
     this.hideModal = this.hideModal.bind(this);
-  }
-
-  componentWillUnmount() {
-    this.unsubscribe();
   }
 
   hideModal() {
@@ -46,24 +44,17 @@ export default class App extends Component<Props> {
           rightComponent={{ icon: 'home', color: '#fff' }}
           />
         <View style={styles.container}>
-          {this.state.loading ? (
-              <Text>Loading...</Text>
-              ) : ( 
                 <View style={styles.listContainer}>
                   <View>
-                    <Text>Drizzle ready</Text>
-                  </View>
-                  <View>
                     <ReviewList 
-                    drizzle={this.props.drizzle}
-                    drizzleState={this.state.drizzleState}
+                    contract={this.props.contract}
+                    web3={this.props.web3}
                     />
                   </View>
                   <View>
-                    <WriteReview drizzle={this.props.drizzle} drizzleState={this.state.drizzleState} visible={this.state.modalVisible} exit={this.hideModal} style={styles.modal} />
+                    <WriteReview contract={this.props.contract} web3={this.props.web3} visible={this.state.modalVisible} exit={this.hideModal} style={styles.modal} />
                   </View>
                 </View>
-              )}
           </View>
             <View style={styles.bottom}>
               <Button

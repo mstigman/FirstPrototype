@@ -42,7 +42,7 @@
     "truffle-hdwallet-provider": "^1.0.17",
     "url": "^0.10.3",
     "vm-browserify": "^1.1.2",
-    "web3": "^1.0.0-beta.37"
+    "web3": "^1.0.0-beta.33"
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",

@@ -4,16 +4,47 @@ import console from "console";
 
 export class WriteReview extends Component {
   state = {
-    inputText: "beep"
+    inputText: "",
+    count: 0
   };
 
+  componentDidMount() {
+    this.props.web3.eth.getTransactionCount("0x990ED529F481c77AA92d05FA56609CD927934406").then((count) => {
+      this.setState({ count: count });
+    })
+  }
 
   sendReview(content) {
-    const { drizzle } = this.props;
-    const contract = drizzle.contracts.protoReviewSystem;
-    this.state = drizzle.store.getState();
+    const tx = {
+      // this could be provider.addresses[0] if it exists
+      from: "0x990ED529F481c77AA92d05FA56609CD927934406", 
+      // target address, this could be a smart contract address
+      to: this.props.contract.options.address, 
+      // optional if you want to specify the gas limit 
+      gas: 600000,
+      nonce: this.state.count, 
+      // optional if you are invoking say a payable function 
+      //value: value,
+      // this encodes the ABI of the method and the arguements
+      data: this.props.contract.methods.writeReview(content, 1, 0).encodeABI() 
+    };
 
-    const reviewKey = contract.methods.writeReview(content, 1).send({from: '0x4c5657fa09F2B949F0373051bd0B7f03c41e24dd', gas: 600000});
+    this.props.web3.eth.accounts.signTransaction(tx, "0xBD1097FA93E8497EC33D7A92F92FB8D7375C2671D206BD99E8AD728A91379776").then((signedTx) => {  // raw transaction string may be available in .raw or 
+      // .rawTransaction depending on which signTransaction
+      // function was called
+      console.log("transaction sent");
+      const sentTx = this.props.web3.eth.sendSignedTransaction(signedTx.raw || signedTx.rawTransaction);  
+      
+      sentTx.on("receipt", receipt => {
+        console.log(receipt)
+      });
+      sentTx.on("error", err => {
+        console.log("error" + err);
+      });
+    }).catch((err) => {
+      console.log(err);
+    });
+
   }
 
   render() {

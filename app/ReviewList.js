@@ -5,36 +5,31 @@ import console from "console";
 import Review from "./Review";
 
 class ReviewList extends React.Component {
-    state = {reviewIdsKey: null, reviewIDs: null}
-    updated = false;
-    //state = {reviewIdsKey: null}
+    state = {reviewIDs: null}
 
     componentDidMount() {
-        const { drizzle } = this.props;
-        const contract = drizzle.contracts.protoReviewSystem;
-        this.state = drizzle.store.getState()
+        //const { drizzle } = this.props;
+        //const contract = drizzle.contracts.protoReviewSystem;
 
         // let drizzle know we want to watch the `myString` method
-        const reviewIdsKey = contract.methods["getReviewIDsFromReviewable"].cacheCall(1, 0);
+        this.props.contract.methods.getReviewIDsFromReviewable(1).call().then((promise) => {
+            this.setState({reviewIDs: promise}); 
+        }).catch((e) => {
+            console.log(e);
+        });
 
         // save the `dataKey` to local component state for later reference
-        this.setState({ reviewIdsKey });
+        //this.setState({ reviewIdsKey });
       }
     render() {
-        const { protoReviewSystem } = this.props.drizzleState.contracts;
-        const reviewIDs = protoReviewSystem.getReviewIDsFromReviewable[this.state.reviewIdsKey];
-        const test = reviewIDs && reviewIDs.value[0];
 
         let reviews = [];
-        if (reviewIDs) {
-            reviews = reviewIDs.value.map((ID) =>
-            <Review drizzle={this.props.drizzle} drizzleState={this.props.drizzleState} reviewID={ID}></Review>
+        if (this.state.reviewIDs) {
+            reviews = this.state.reviewIDs.map((ID) =>
+            <Review contract={this.props.contract} web3={this.props.web3} reviewID={parseInt(ID)}></Review>
             );
-            /*
-            for (let i = 0; i < reviewIDs.value.length; i++) {
-                reviews.push(<Review drizzle={this.props.drizzle} drizzleState={this.props.drizzleState} reviewID={reviewIDs.value[i]}></Review>)
-            }
-            */
+        } else {
+            reviews = <Text>no reviews yet :(</Text>
         }
 
  

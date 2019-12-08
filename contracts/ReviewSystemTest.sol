@@ -1,6 +1,6 @@
 pragma solidity >=0.4.24;
 
-contract ProtoReviewSystem {
+contract ReviewSystemTest {
 
     uint levelPerUpvote = 1;
     uint levelPerDownvote = 1;

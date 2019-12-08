@@ -4,47 +4,28 @@ import { Header } from "react-native-elements";
 import console from "console";
 
 class Review extends React.Component {
-    state = {reviewKey: null}
+    state = {reviewContent: null}
 
     componentDidMount() {
-        const { drizzle, drizzleState, reviewID } = this.props;
-        const contract = drizzle.contracts.protoReviewSystem;
-        this.state = drizzle.store.getState()
+
 
         // let drizzle know we want to watch the `myString` method
         //const ID = contract.getReviewIDsFromReviewable[reviewIdsKey];
 
-        let reviewKey;
-        if (reviewID) {
-            reviewKey = contract.methods.getReview.cacheCall(parseInt(reviewID, 10));
-        } else {
-            reviewKey = null;
-        }
+        this.props.contract.methods.getReview(this.props.reviewID).call().then((promise) => {
+          this.setState({reviewContent: promise.content});
+        })
         // save the `dataKey` to local component state for later reference
-        this.setState({ reviewKey });
       }
 
-      loadReview() {
-        const { drizzle, drizzleState, reviewID } = this.props;
-        const contract = drizzle.contracts.protoReviewSystem;
-        this.state = drizzle.store.getState()
 
-        // let drizzle know we want to watch the `myString` method
-        //const ID = contract.getReviewIDsFromReviewable[reviewIdsKey];
-        const reviewKey = contract.methods["getReview"].cacheCall(reviewID);
-        // save the `dataKey` to local component state for later reference
-        this.setState({ reviewKey });
-      }
     render() {
-        const { protoReviewSystem } = this.props.drizzleState.contracts;
-        const review = protoReviewSystem.getReview[this.state.reviewKey];
-        if (!this.state.reviewKey && this.props.reviewID) {
-            this.loadReview();
-        }
+
         return (
             <View style={styles.container}>
-                <Text style={styles.item}>{review && review.value[0]}</Text>
+                <Text style={styles.item}>{this.state.reviewContent}</Text>
                 <View>
+                  {/*
                   <Button
                     title="Press me"
                     onPress={() => Alert.alert('Simple Button pressed')}
@@ -53,6 +34,7 @@ class Review extends React.Component {
                     title="Press me"
                     onPress={() => Alert.alert('Simple Button pressed')}
                     />
+                  */}
                 </View>
               </View>
         );
